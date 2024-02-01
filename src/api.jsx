@@ -32,6 +32,7 @@ export function USER_GET(token) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
     },
   };
