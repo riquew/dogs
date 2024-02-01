@@ -1,47 +1,39 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import useForm from "../../Hooks/useForm";
+import Input from "../Form/Input";
+import Button from "../Form/Button";
+import { USER_POST } from "../../Api";
+import { UserContext } from "../../UserContext";
 
 const LoginCreate = () => {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const username = useForm();
+  const email = useForm("email");
+  const password = useForm();
 
-  function handleForm() {
+  const { userLogin } = React.useContext(UserContext);
+
+  async function handleSubmit() {
     event.preventDefault();
-    fetch("https://dogsapi.origamid.dev/json/jwt-auth/v1/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((json) => {
-        console.log(json);
-      });
+    console.log(username.value, email.value, password.value);
+    const { url, options } = USER_POST({
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    });
+    const response = await fetch(url, options);
+    if (response.ok) userLogin(username.value, password.value);
+    console.log(response);
   }
 
   return (
-    <section>
-      <h1>Login Criar</h1>
-      <form action="" onSubmit={handleForm}>
-        <input
-          type="text"
-          value={username}
-          onChange={({ target }) => setUsername(target.value)}
-        />
-        <input
-          type="password"
-          name=""
-          id=""
-          value={password}
-          onChange={({ target }) => setPassword(target.value)}
-        />
-        <button>Entrar</button>
+    <section className="animeLeft">
+      <h1 className="title">Cadastre-se</h1>
+      <form onSubmit={handleSubmit}>
+        <Input label="Usuario" type="text" name="username" {...username} />
+        <Input label="Senha" type="password" name="password" {...password} />
+        <Input label="Email" type="email" name="email" {...email} />
+        <Button>Cadastrar</Button>
       </form>
-      <Link to="/login/criar">Cadastro</Link>
     </section>
   );
 };
